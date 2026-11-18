@@ -1,0 +1,6 @@
+# Build outputs
+ABICOMP.so
+test-api
+test-api-vg
+*.o
+gconv-modules.cache

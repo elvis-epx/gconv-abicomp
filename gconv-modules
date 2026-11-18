@@ -1,0 +1,5 @@
+# ABICOMP (Brazilian character set, ABICOMP / ABNT)
+alias	ABICOMP-BR//		ABICOMP//
+alias	CP-ABICOMP//		ABICOMP//
+module	ABICOMP//		INTERNAL		ABICOMP		1
+module	INTERNAL		ABICOMP//		ABICOMP		1
