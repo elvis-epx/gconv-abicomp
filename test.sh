@@ -45,4 +45,38 @@ for i in $(seq 2000); do cat "$T/all.abc"; done > "$T/big.abc"
 iconv -f ABICOMP -t UTF-16LE "$T/big.abc" | iconv -f UTF-16LE -t ABICOMP | cmp -s - "$T/big.abc" \
   && ok "large round trip ($(stat -c %s "$T/big.abc") bytes)" || bad "large round trip"
 
+# ---------------------------------------------------------------- BRASCII
+# Every defined byte: 0x01-0x7F and 0xA0-0xFF
+for i in $(seq 1 127) $(seq 160 255); do printf "\\x$(printf %02x $i)"; done > "$T/all.bra"
+
+iconv -f BRASCII -t UTF-16BE "$T/all.bra" > "$T/all.u16" && ok "BRASCII: decode all bytes" || bad "BRASCII: decode all bytes"
+# Expected: ISO-8859-1, except 0xD7 -> U+0152 and 0xF7 -> U+0153
+want=$(for i in $(seq 1 127) $(seq 160 255); do
+         case $i in 215) printf 0152;; 247) printf 0153;; *) printf %04x $i;; esac
+       done)
+check "BRASCII: table = ISO-8859-1 with Œ/œ at 0xD7/0xF7" "$(od -An -tx1 -v "$T/all.u16" | tr -d ' \n')" "$want"
+iconv -f BRASCII -t UTF-8 "$T/all.bra" | iconv -f UTF-8 -t BRASCII | cmp -s - "$T/all.bra" \
+  && ok "BRASCII: round trip UTF-8" || bad "BRASCII: round trip UTF-8"
+check "BRASCII: decode Œ œ" "$(printf '\xd7uvre \xf7' | iconv -f BRASCII -t UTF-8)" "Œuvre œ"
+check "BRASCII: encode Œ œ" "$(printf 'Œœ' | iconv -f UTF-8 -t BRASCII | od -An -tx1 | tr -d ' ')" "d7f7"
+check "BRASCII: alias CP3847" "$(printf 'A\xe7\xe3o' | iconv -f CP3847 -t UTF-8)" "Ação"
+
+# Through module-based charsets: identical to Latin-1 outside 0xD7/0xF7
+check "BRASCII -> ISO-8859-1" "$(printf 'A\xe7\xe3o \xa9' | iconv -f BRASCII -t ISO-8859-1 | od -An -tx1 | tr -d ' ')" "41e7e36f20a9"
+check "BRASCII -> CP1252 (Œ œ)" "$(printf '\xd7\xf7' | iconv -f BRASCII -t CP1252 | od -An -tx1 | tr -d ' ')" "8c9c"
+check "ABICOMP -> BRASCII" "$(printf '\xa6\xb5\xd5\xc4' | iconv -f ABICOMP -t BRASCII | od -An -tx1 | tr -d ' ')" "c7d7f7e3"
+
+# Errors: undefined bytes, and × ÷ (which BRASCII lacks)
+printf 'ab\x85cd' | iconv -f BRASCII -t UTF-8 >/dev/null 2>"$T/err"; rc=$?
+[ $rc -ne 0 ] && grep -q 'position 2' "$T/err" && ok "BRASCII: invalid byte 0x85 rejected at pos 2" || bad "BRASCII invalid byte: rc=$rc $(cat "$T/err")"
+printf 'a×b' | iconv -f UTF-8 -t BRASCII >/dev/null 2>"$T/err"; rc=$?
+[ $rc -ne 0 ] && grep -q 'position 1' "$T/err" && ok "BRASCII: unmappable × rejected at byte 1" || bad "BRASCII unmappable: rc=$rc $(cat "$T/err")"
+check "BRASCII: //TRANSLIT on output" "$(printf '2×3÷€' | iconv -f UTF-8 -t BRASCII//TRANSLIT)" "2?3??"
+check "BRASCII: //IGNORE on input" "$(printf 'a\x80\x9fb' | iconv -f BRASCII -t UTF-8//IGNORE 2>/dev/null)" "ab"
+
+# Large input
+for i in $(seq 2000); do cat "$T/all.bra"; done > "$T/big.bra"
+iconv -f BRASCII -t UTF-16LE "$T/big.bra" | iconv -f UTF-16LE -t BRASCII | cmp -s - "$T/big.bra" \
+  && ok "BRASCII: large round trip ($(stat -c %s "$T/big.bra") bytes)" || bad "BRASCII: large round trip"
+
 exit $fail

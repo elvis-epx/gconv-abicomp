@@ -3,3 +3,8 @@ alias	ABICOMP-BR//		ABICOMP//
 alias	CP-ABICOMP//		ABICOMP//
 module	ABICOMP//		INTERNAL		ABICOMP		1
 module	INTERNAL		ABICOMP//		ABICOMP		1
+
+# BRASCII (Brazilian character set, ABNT NBR 9611; Star printers' code page 3847)
+alias	CP3847//		BRASCII//
+module	BRASCII//		INTERNAL		ABICOMP		1
+module	INTERNAL		BRASCII//		ABICOMP		1

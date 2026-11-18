@@ -141,7 +141,21 @@ main (void)
       iconv_close (to); iconv_close (back);
     }
 
-  /* 8. Many open/close cycles (module refcounting, no leaks/crashes).  */
+  /* 8. BRASCII, sharing the module with ABICOMP in one process.  */
+  const char bra[] = "A\xe7\xe3o \xd7uvre \xf7";
+  r = conv ("UTF-8", "BRASCII", bra, strlen (bra), out, sizeof out, &olen, &used);
+  CHECK (r == 0 && olen == strlen ("Ação Œuvre œ")
+	 && memcmp (out, "Ação Œuvre œ", olen) == 0,
+	 "BRASCII decode to UTF-8: \"%.*s\"", (int) olen, out);
+  r = conv ("BRASCII", "ABICOMP", abc, strlen (abc), out, sizeof out, &olen, &used);
+  CHECK (r == 0 && olen == strlen (abc)
+	 && memcmp (out, "A\xe7\xe3o \xd7uvre \xb1\xaa", olen) == 0,
+	 "ABICOMP -> BRASCII (%zu bytes)", olen);
+  r = conv ("BRASCII", "UTF-8", "a\xc3\x97" "b", 4, out, sizeof out, &olen, &used);
+  CHECK (r == (size_t) -1 && errno == EILSEQ && used == 1 && olen == 1,
+	 "BRASCII: unmappable MULTIPLICATION SIGN -> EILSEQ at offset %zu", used);
+
+  /* 9. Many open/close cycles (module refcounting, no leaks/crashes).  */
   int okc = 1;
   for (int i = 0; i < 10000 && okc; ++i)
     {

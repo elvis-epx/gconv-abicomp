@@ -6,16 +6,22 @@
 
 ## Português
 
-Módulo **gconv** para a glibc que adiciona suporte ao conjunto de caracteres
-**ABICOMP**, o código de 8 bits definido nos anos 1980 pela Associação
-Brasileira da Indústria de Computadores e Periféricos e usado em impressoras,
-terminais e microcomputadores brasileiros (Elebra, Itautec, Scopus, etc.).
+Módulo **gconv** para a glibc que adiciona suporte a dois conjuntos de
+caracteres brasileiros de 8 bits usados em impressoras, terminais e
+microcomputadores dos anos 1980 (Elebra, Itautec, Scopus, etc.):
 
-Depois de instalado, o ABICOMP fica disponível para `iconv(1)`, `iconv(3)` e
+- **ABICOMP**, definido pela Associação Brasileira da Indústria de
+  Computadores e Periféricos;
+- **BRASCII**, a norma ABNT NBR 9614:1986 (revista como NBR 9611:1991),
+  também chamada de página de código 3847 nas impressoras Star.
+
+Depois de instalados, ambos ficam disponíveis para `iconv(1)`, `iconv(3)` e
 qualquer programa que use a glibc, convertendo de e para qualquer outra
 codificação que a glibc conheça (UTF-8, ISO-8859-1, CP1252, UTF-16…).
 
 ### Codificação
+
+ABICOMP:
 
 | Faixa        | Conteúdo                                         |
 |--------------|--------------------------------------------------|
@@ -24,7 +30,15 @@ codificação que a glibc conheça (UTF-8, ISO-8859-1, CP1252, UTF-16…).
 | `0xA0–0xDF`  | letras acentuadas e símbolos ([tabela](#tabela--table)) |
 | `0xE0–0xFF`  | não definida                                     |
 
-Nomes aceitos: `ABICOMP`, `ABICOMP-BR`, `CP-ABICOMP`.
+BRASCII:
+
+| Faixa        | Conteúdo                                         |
+|--------------|--------------------------------------------------|
+| `0x00–0x7F`  | ASCII                                            |
+| `0x80–0x9F`  | não definida                                     |
+| `0xA0–0xFF`  | igual à ISO-8859-1, exceto `0xD7` = `Œ` (U+0152) e `0xF7` = `œ` (U+0153), no lugar de `×` e `÷` |
+
+Nomes aceitos: `ABICOMP`, `ABICOMP-BR`, `CP-ABICOMP`; `BRASCII`, `CP3847`.
 
 ### Compilação e instalação
 
@@ -50,9 +64,11 @@ Para remover: `sudo make uninstall`.
 ```sh
 iconv -f ABICOMP -t UTF-8 entrada.txt > saida.txt
 iconv -f UTF-8 -t ABICOMP entrada.txt > saida.abc
+iconv -f BRASCII -t UTF-8 entrada.txt > saida.txt
 ```
 
-Caracteres sem equivalente em ABICOMP (por exemplo `€`) geram erro. Use
+Caracteres sem equivalente no conjunto de destino (por exemplo `€`, ou `×`
+em BRASCII) geram erro. Use
 `//TRANSLIT` para trocá-los por `?` ou `//IGNORE` para descartá-los:
 
 ```sh
@@ -75,17 +91,21 @@ GNU LGPL versão 2.1 ou posterior. Veja o arquivo [LICENSE](LICENSE).
 
 ## English
 
-A glibc **gconv** module that adds the **ABICOMP** character set: the 8-bit
-code defined in the 1980s by the Brazilian computer industry association
-(Associação Brasileira da Indústria de Computadores e Periféricos) and used by
-Brazilian printers, terminals and microcomputers (Elebra, Itautec, Scopus,
-etc.).
+A glibc **gconv** module that adds two Brazilian 8-bit character sets used by
+1980s printers, terminals and microcomputers (Elebra, Itautec, Scopus, etc.):
 
-Once installed, ABICOMP is available to `iconv(1)`, `iconv(3)` and any program
+- **ABICOMP**, defined by the Brazilian computer industry association
+  (Associação Brasileira da Indústria de Computadores e Periféricos);
+- **BRASCII**, the ABNT NBR 9614:1986 standard (revised as NBR 9611:1991),
+  also known as code page 3847 on Star printers.
+
+Once installed, both are available to `iconv(1)`, `iconv(3)` and any program
 that uses glibc, converting to and from every other encoding glibc knows
 (UTF-8, ISO-8859-1, CP1252, UTF-16…).
 
 ### Encoding
+
+ABICOMP:
 
 | Range        | Contents                                         |
 |--------------|--------------------------------------------------|
@@ -94,7 +114,15 @@ that uses glibc, converting to and from every other encoding glibc knows
 | `0xA0–0xDF`  | accented letters and symbols ([table](#tabela--table)) |
 | `0xE0–0xFF`  | undefined                                        |
 
-Accepted names: `ABICOMP`, `ABICOMP-BR`, `CP-ABICOMP`.
+BRASCII:
+
+| Range        | Contents                                         |
+|--------------|--------------------------------------------------|
+| `0x00–0x7F`  | ASCII                                            |
+| `0x80–0x9F`  | undefined                                        |
+| `0xA0–0xFF`  | same as ISO-8859-1, except `0xD7` = `Œ` (U+0152) and `0xF7` = `œ` (U+0153) instead of `×` and `÷` |
+
+Accepted names: `ABICOMP`, `ABICOMP-BR`, `CP-ABICOMP`; `BRASCII`, `CP3847`.
 
 ### Building and installing
 
@@ -120,9 +148,11 @@ To remove it: `sudo make uninstall`.
 ```sh
 iconv -f ABICOMP -t UTF-8 input.txt > output.txt
 iconv -f UTF-8 -t ABICOMP input.txt > output.abc
+iconv -f BRASCII -t UTF-8 input.txt > output.txt
 ```
 
-Characters with no ABICOMP equivalent (such as `€`) are an error. Use
+Characters with no equivalent in the target set (such as `€`, or `×` in
+BRASCII) are an error. Use
 `//TRANSLIT` to replace them with `?`, or `//IGNORE` to drop them:
 
 ```sh
