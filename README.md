@@ -69,7 +69,7 @@ AArch64 são suportadas; outras arquiteturas falham na compilação.
 
 ### Licença
 
-MIT. Veja o arquivo [LICENSE](LICENSE).
+GNU LGPL versão 2.1 ou posterior. Veja o arquivo [LICENSE](LICENSE).
 
 ---
 
@@ -139,7 +139,7 @@ and AArch64 are supported; other architectures fail to compile.
 
 ### License
 
-MIT. See the [LICENSE](LICENSE) file.
+GNU LGPL version 2.1 or later. See the [LICENSE](LICENSE) file.
 
 ---
 

@@ -17,7 +17,8 @@
    the next step of the chain requires demangling, which is
    architecture-specific (see ptr_demangle below).
 
-   Copyright (C) 2026 Elvis Pfutzenreuter.  MIT License, see LICENSE.  */
+   Copyright (C) 2026 Elvis Pfutzenreuter.
+   Licensed under the GNU LGPL v2.1 or later, see LICENSE.  */
 
 #include <gconv.h>
 #include <stdint.h>
